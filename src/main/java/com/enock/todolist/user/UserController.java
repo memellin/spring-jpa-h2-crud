@@ -13,23 +13,23 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-	
+
 	@Autowired
 	private IUserRepository userRepository;
 
 	@PostMapping("/")
 	public ResponseEntity create(@RequestBody UserModel userModel) {
 		UserModel userSubscription = this.userRepository.findByUsername(userModel.getUsername());
-		if(userSubscription != null) {
-			
-			//status code
+		if (userSubscription != null) {
+
+			// status code
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("usuario ja existe");
 		}
-		
+
 		var userPassword = BCrypt.withDefaults()
 				.hashToString(12, userModel.getPassword().toCharArray());
 		userModel.setPassword(userPassword);
-		
+
 		UserModel userCreated = this.userRepository.save(userModel);
 		return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
 	}
